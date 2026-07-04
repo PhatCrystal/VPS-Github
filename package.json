@@ -5,7 +5,7 @@
   "main": "api/create-vps.js",
   "type": "module",
   "scripts": {
-    "start": "node api/create-vps.js"
+    "dev": "vercel dev"
   },
   "dependencies": {
     "@octokit/rest": "^21.0.1",
@@ -22,8 +22,5 @@
     "remote-desktop"
   ],
   "author": "Hiếu Dz",
-  "license": "MIT",
-  "devDependencies": {
-    "vercel": "^54.20.1"
-  }
+  "license": "MIT"
 }
