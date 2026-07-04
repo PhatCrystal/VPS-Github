@@ -3,7 +3,7 @@ import fs from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const sodium = require('libsodium-wrappers');
-const ALLOWED_ORIGIN_PATTERN = /^https?:\/\/([\w\-]+\.)?(hieuvn\.xyz|vps-github\.vercel\.app)(\/.)?$/;
+const ALLOWED_ORIGIN_PATTERN = /^https?:\/\/([\w\-]+\.)?(hieuvn\.xyz|vercel\.app)(\/.*)?$/;
 const VPS_USER_FILE = '/tmp/vpsuser.json';
 
 // Save VPS user to temporary storage
@@ -23,8 +23,16 @@ function saveVpsUser(githubToken, remoteLink) {
 }
 
 // Check if origin is allowed
-function checkOrigin(origin) {
+function checkOrigin(origin, host) {
   if (!origin) return false;
+  
+  // Allow same-site requests
+  const hostUrl = host ? host.toLowerCase() : '';
+  const cleanOrigin = origin.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
+  if (hostUrl && cleanOrigin === hostUrl) {
+    return true;
+  }
+  
   return ALLOWED_ORIGIN_PATTERN.test(origin) || origin.includes('localhost') || origin.includes('127.0.0.1');
 }
 
@@ -583,8 +591,9 @@ export default async (req, res) => {
   }
   try {
     const origin = req.headers.origin;
+    const host = req.headers.host;
 
-    if (!checkOrigin(origin)) {
+    if (!checkOrigin(origin, host)) {
       return res.status(403).json({ 
         error: 'Unauthorized origin', 
         origin 
