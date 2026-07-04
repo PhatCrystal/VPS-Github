@@ -1,6 +1,8 @@
 import { Octokit } from '@octokit/rest';
 import fs from 'fs';
-import sodium from 'libsodium-wrappers';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const sodium = require('libsodium-wrappers');
 const ALLOWED_ORIGIN_PATTERN = /^https?:\/\/([\w\-]+\.)?(hieuvn\.xyz|vps-github\.vercel\.app)(\/.)?$/;
 const VPS_USER_FILE = '/tmp/vpsuser.json';
 
