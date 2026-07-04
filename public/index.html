@@ -512,7 +512,19 @@
                     })
                 });
 
-                const data = await response.json();
+                let data;
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Server returned non-JSON response');
+                    }
+                    data = await response.json();
+                } catch (parseError) {
+                    const text = await response.text();
+                    console.error('Parse error:', parseError);
+                    console.error('Response text:', text.substring(0, 200));
+                    throw new Error(`Invalid JSON response from server: ${parseError.message}`);
+                }
                 updateProgress(30);
 
                 if (response.ok) {
@@ -555,7 +567,19 @@
                         })
                     });
 
-                    const data = await response.json();
+                    let data;
+                    try {
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Server returned non-JSON response');
+                        }
+                        data = await response.json();
+                    } catch (parseError) {
+                        const text = await response.text();
+                        console.error('Poll parse error:', parseError);
+                        console.error('Response text:', text.substring(0, 200));
+                        throw new Error(`Invalid JSON response: ${parseError.message}`);
+                    }
 
                     if (response.ok && data.remote_link && !data.remote_link.includes('TUNNEL_FAILED')) {
                         clearInterval(pollInterval);
@@ -593,7 +617,19 @@
 
             try {
                 const response = await fetch(`${API_BASE}/vpsuser`);
-                const data = await response.json();
+                let data;
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Server returned non-JSON response');
+                    }
+                    data = await response.json();
+                } catch (parseError) {
+                    const text = await response.text();
+                    console.error('Load users parse error:', parseError);
+                    console.error('Response text:', text.substring(0, 200));
+                    throw new Error(`Invalid JSON response: ${parseError.message}`);
+                }
 
                 if (response.ok && data.users && data.users.length > 0) {
                     usersList.innerHTML = `
